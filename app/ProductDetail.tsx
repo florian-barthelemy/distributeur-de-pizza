@@ -2,8 +2,7 @@ import React from 'react';
 import { View, Text, Button, Image, StyleSheet } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../app/index';
-import { Pizza } from '../../model/pizza';
+import { RootStackParamList } from './_layout';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 type ProductDetailNavigationProp = StackNavigationProp<RootStackParamList, 'ProductDetail'>;
@@ -19,7 +18,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: 'localhost:8080' }} // Remplace par l'URL de l'image réelle
+        source={{ uri: pizza.image_url }} // Remplace par l'URL de l'image réelle
         style={styles.image}
       />
       <Text style={styles.pizzaName}>{pizza.name}</Text>

@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet,  Image, } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../app/index';
-import { Pizza } from '../../model/pizza';
-import { RouteProp } from '@react-navigation/native';
+import { Pizza } from '@/model/pizza';
+import { RootStackParamList } from './_layout';
+
+
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductList'>;
 
@@ -28,8 +29,11 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
             onPress={() => navigation.navigate('ProductDetail', { pizza: item })}
           >
             <View style={styles.pizzaContainer}>
+              <Image source={{uri: item.image_url}} style={styles.image}/>
+              <View style={styles.priceContainer}>
               <Text style={styles.pizzaName}>{item.name}</Text>
               <Text style={styles.pizzaPrice}>{item.price}€</Text>
+              </View>
             </View>
           </TouchableOpacity>
         )}
@@ -46,15 +50,29 @@ const styles = StyleSheet.create({
   pizzaContainer: {
     padding: 10,
     borderBottomWidth: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     borderColor: '#ccc',
   },
   pizzaName: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   pizzaPrice: {
     color: '#666',
   },
+
+  image: {
+    width: 100,
+    height: 100,
+  },
+
+  priceContainer:{
+    display: 'flex',
+    alignItems : 'center'
+  }
 });
 
 export default ProductList;
