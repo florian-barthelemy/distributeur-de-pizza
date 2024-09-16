@@ -1,10 +1,9 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet,  Image, } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import axios from 'axios';
 import { Pizza } from '@/model/pizza';
 import { RootStackParamList } from './_layout';
-
-
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductList'>;
 
@@ -12,27 +11,38 @@ interface Props {
   navigation: ProductListNavigationProp;
 }
 
-const pizzas: Pizza[] = [
-  { id: '1', name: 'Margherita', description:'Test', price: 8, image_url:'https://www.dominos.fr/ManagedAssets/FR/product/PCBQ/FR_PCBQ_fr_hero_13347.png?v1398276305' },
-  { id: '2', name: 'Pepperoni', description:'Test', price: 10, image_url:'https://www.dominos.fr/ManagedAssets/FR/product/PCBQ/FR_PCBQ_fr_hero_13347.png?v1398276305' },
-  { id: '3', name: 'Vegetarian', description:'Test', price: 9, image_url:'https://www.dominos.fr/ManagedAssets/FR/product/PCBQ/FR_PCBQ_fr_hero_13347.png?v1398276305' },
-];
-
 const ProductList: React.FC<Props> = ({ navigation }) => {
+  const [pizzas, setPizzas] = useState<Pizza[]>([]);
+
+  useEffect(() => {
+    const fetchPizzas = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/pizzas');
+        setPizzas(response.data);
+      } catch (err) {
+        console.error(err);
+      } 
+    };
+
+    fetchPizzas();
+  }, []);
+
+
+
   return (
     <View style={styles.container}>
       <FlatList
         data={pizzas}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => navigation.navigate('ProductDetail', { pizza: item })}
           >
             <View style={styles.pizzaContainer}>
-              <Image source={{uri: item.image_url}} style={styles.image}/>
+              <Image source={{ uri: item.image_url }} style={styles.image} />
               <View style={styles.priceContainer}>
-              <Text style={styles.pizzaName}>{item.name}</Text>
-              <Text style={styles.pizzaPrice}>{item.price}€</Text>
+                <Text style={styles.pizzaName}>{item.name}</Text>
+                <Text style={styles.pizzaPrice}>{item.price}€</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -63,16 +73,14 @@ const styles = StyleSheet.create({
   pizzaPrice: {
     color: '#666',
   },
-
   image: {
     width: 100,
     height: 100,
   },
-
-  priceContainer:{
+  priceContainer: {
     display: 'flex',
-    alignItems : 'center'
-  }
+    alignItems: 'center',
+  },
 });
 
 export default ProductList;
