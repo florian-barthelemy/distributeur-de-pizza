@@ -4,9 +4,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import axios from 'axios';
 import { Pizza } from '@/model/pizza';
 import { RootStackParamList } from './_layout';
-import { useDispatch, useSelector } from 'react-redux';
-import { addPizza, removePizza } from '@/redux/pizzaReducer';
-import { RootState } from '@/redux/pizzaStore';
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductList'>;
 
@@ -16,13 +13,6 @@ interface Props {
 
 const ProductList: React.FC<Props> = ({ navigation }) => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
-  // const dispatch = useDispatch();
-
-
-  // const quantities = useSelector((state: RootState) => state.pizzas.value.reduce((acc, pizza) => {
-  //   acc[pizza.pizza.id] = pizza.quantity;
-  //   return acc;
-  // }, {} as Record<number, number>));
 
   useEffect(() => {
     const fetchPizzas = async () => {
@@ -43,7 +33,6 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
         data={pizzas}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => {
-          // const quantity = quantities[item.id] || 0;
 
           return (
             <TouchableOpacity
@@ -55,18 +44,6 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
                   <Text style={styles.pizzaName}>{item.name}</Text>
                   <Text style={styles.pizzaPrice}>{item.price}€</Text>
                 </View>
-
-                {/* <View style={styles.quantityContainer}>
-                  <TouchableOpacity onPress={() => dispatch(addPizza(item))} style={styles.button}>
-                    <Text style={styles.buttonText}>+</Text>
-                  </TouchableOpacity>
-
-                  <Text>{quantity}</Text> 
-
-                  <TouchableOpacity onPress={() => dispatch(removePizza(item))} style={styles.button}>
-                    <Text style={styles.buttonText}>-</Text>
-                  </TouchableOpacity>
-                </View> */}
               </View>
             </TouchableOpacity>
           );
@@ -105,22 +82,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
   },
-//   button: {
-//     padding: 10,
-//     backgroundColor: '#ddd',
-//     borderRadius: 5,
-//     margin: 10,
-//   },
-//   buttonText: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//   },
-
-//   quantityContainer :{
-// display: 'flex',
-// flexDirection: 'column',
-// alignItems: 'center'
-//   },
 });
 
 export default ProductList;

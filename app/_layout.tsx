@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Pizza } from '../model/pizza'; // Définition du type Pizza
 import ProductDetail from './ProductDetail';
 import ProductList from './ProductList';
 import { store } from '@/redux/pizzaStore';
-import { Provider } from 'react-redux';
+import { Provider} from 'react-redux';
 import Cart from './cart';
+import { loadCartFromStorage } from '@/redux/pizzaReducer';
 
 export type RootStackParamList = {
   ProductList: undefined;
@@ -23,7 +24,12 @@ const ProductStack = () => (
   </Stack.Navigator>
 );
 
-const RootLayout = () => {
+const RootLayout:React.FC = () => {
+  useEffect(() => {
+    store.dispatch(loadCartFromStorage());
+  }, []);
+
+
   return (
     <Provider store={store}>
         <Tab.Navigator>

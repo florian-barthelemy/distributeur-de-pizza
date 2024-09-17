@@ -1,11 +1,20 @@
+import { loadCartFromAsyncStorage, saveCartToAsyncStorage } from "@/asyncStorage/cartStorage";
 import { Pizza } from "@/model/pizza";
 import { PizzaWithQuantity } from "@/model/pizzaWithQuantity";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
   const findIndexPizza = (state: { value: PizzaWithQuantity[] }, pizza: Pizza): number => {
     return state.value.findIndex((p) => p.pizza.id === pizza.id);
   };
   
+
+  export const loadCartFromStorage = createAsyncThunk(
+    'pizzas/loadCartFromStorage',
+    async () => {
+      const cart = await loadCartFromAsyncStorage();
+      return cart;
+    }
+  );
   
   const pizzaSlice = createSlice({
     name: 'pizzas',
@@ -20,6 +29,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
         } else {
           state.value[index].quantity += 1;
         }
+        saveCartToAsyncStorage(state.value);
       },
       
       
@@ -31,14 +41,23 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
           } else {
             state.value.splice(index, 1);
           }
+
+          saveCartToAsyncStorage(state.value);
+          
         } else {
           console.log('Pizza non trouvée !');
         }
       },
+
+    },
+    extraReducers: (builder) => {
+      builder.addCase(loadCartFromStorage.fulfilled, (state, action) => {
+        state.value = action.payload;
+      });
     },
   });
 
 
-export const { addPizza, removePizza } = pizzaSlice.actions;
+export const { addPizza, removePizza} = pizzaSlice.actions;
 
 export default pizzaSlice.reducer;

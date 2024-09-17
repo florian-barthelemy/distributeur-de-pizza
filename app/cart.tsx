@@ -1,18 +1,10 @@
 import React from 'react';
 import { View, Text, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from './_layout';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPizza, removePizza } from '@/redux/pizzaReducer';
 import { RootState } from '@/redux/pizzaStore';
 
-/*interface Props {
-  route: ProductDetail;
-  navigation: ProductDetailNavigationProp;
-}*/
 
-//const Cart: React.FC<Props> = ({ route, navigation }) => {
 const Cart = () => {
     const dispatch = useDispatch();
     const cartItems = useSelector((state: RootState) => state.pizzas.value);
