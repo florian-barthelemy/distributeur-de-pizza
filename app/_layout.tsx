@@ -3,6 +3,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Pizza } from '../model/pizza'; // Définition du type Pizza
 import ProductDetail from './ProductDetail';
 import ProductList from './ProductList';
+import { store } from '@/redux/pizzaStore';
+import { Provider } from 'react-redux';
 
 
 
@@ -15,10 +17,13 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function RootLayout() {
   return (
+    <Provider store={store}>
+
       <Stack.Navigator initialRouteName="ProductList">
         <Stack.Screen name="ProductList" component={ProductList} options={{ title: 'Pizzas' }} />
         <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ title: 'Détails de la Pizza' }} />
       </Stack.Navigator>
+    </Provider>
   );
 }
 
