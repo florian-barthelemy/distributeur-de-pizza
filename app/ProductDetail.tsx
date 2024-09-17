@@ -3,6 +3,8 @@ import { View, Text, Button, Image, StyleSheet } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './_layout';
+import { useDispatch } from 'react-redux';
+import { addPizza } from '@/redux/pizzaReducer';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 type ProductDetailNavigationProp = StackNavigationProp<RootStackParamList, 'ProductDetail'>;
@@ -14,6 +16,7 @@ interface Props {
 
 const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
   const { pizza } = route.params;
+  const dispatch = useDispatch();
 
   return (
     <View style={styles.container}>
@@ -22,12 +25,12 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
         style={styles.image}
       />
       <Text style={styles.pizzaName}>{pizza.name}</Text>
-      <Text style={styles.description}>Description: Une délicieuse pizza {pizza.name.toLowerCase()}.</Text>
+      <Text style={styles.description}>Description: {pizza.description} {pizza.name.toLowerCase()}.</Text>
       <Text style={styles.price}>Prix: {pizza.price}€</Text>
 
       <Button
         title="Ajouter au panier"
-        onPress={() => alert(`${pizza.name} ajoutée au panier!`)}
+        onPress={() => dispatch(addPizza(pizza))}
       />
     </View>
   );

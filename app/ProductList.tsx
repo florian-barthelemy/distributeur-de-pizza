@@ -16,13 +16,13 @@ interface Props {
 
 const ProductList: React.FC<Props> = ({ navigation }) => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
 
-  const quantities = useSelector((state: RootState) => state.pizzas.value.reduce((acc, pizza) => {
-    acc[pizza.pizza.id] = pizza.quantity;
-    return acc;
-  }, {} as Record<number, number>));
+  // const quantities = useSelector((state: RootState) => state.pizzas.value.reduce((acc, pizza) => {
+  //   acc[pizza.pizza.id] = pizza.quantity;
+  //   return acc;
+  // }, {} as Record<number, number>));
 
   useEffect(() => {
     const fetchPizzas = async () => {
@@ -43,7 +43,7 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
         data={pizzas}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => {
-          const quantity = quantities[item.id] || 0;
+          // const quantity = quantities[item.id] || 0;
 
           return (
             <TouchableOpacity
@@ -56,7 +56,7 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
                   <Text style={styles.pizzaPrice}>{item.price}€</Text>
                 </View>
 
-                <View style={styles.quantityContainer}>
+                {/* <View style={styles.quantityContainer}>
                   <TouchableOpacity onPress={() => dispatch(addPizza(item))} style={styles.button}>
                     <Text style={styles.buttonText}>+</Text>
                   </TouchableOpacity>
@@ -66,7 +66,7 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
                   <TouchableOpacity onPress={() => dispatch(removePizza(item))} style={styles.button}>
                     <Text style={styles.buttonText}>-</Text>
                   </TouchableOpacity>
-                </View>
+                </View> */}
               </View>
             </TouchableOpacity>
           );
@@ -105,22 +105,22 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
   },
-  button: {
-    padding: 10,
-    backgroundColor: '#ddd',
-    borderRadius: 5,
-    margin: 10,
-  },
-  buttonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
+//   button: {
+//     padding: 10,
+//     backgroundColor: '#ddd',
+//     borderRadius: 5,
+//     margin: 10,
+//   },
+//   buttonText: {
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//   },
 
-  quantityContainer :{
-display: 'flex',
-flexDirection: 'column',
-alignItems: 'center'
-  },
+//   quantityContainer :{
+// display: 'flex',
+// flexDirection: 'column',
+// alignItems: 'center'
+//   },
 });
 
 export default ProductList;
