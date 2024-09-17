@@ -1,12 +1,12 @@
 import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Pizza } from '../model/pizza'; // Définition du type Pizza
 import ProductDetail from './ProductDetail';
 import ProductList from './ProductList';
 import { store } from '@/redux/pizzaStore';
 import { Provider } from 'react-redux';
-
-
+import Cart from './cart';
 
 export type RootStackParamList = {
   ProductList: undefined;
@@ -14,16 +14,32 @@ export type RootStackParamList = {
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
 
-export default function RootLayout() {
+const ProductStack = () => (
+  <Stack.Navigator initialRouteName="ProductList">
+    <Stack.Screen name="ProductList" component={ProductList} options={{ title: 'Pizzas' }} />
+    <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ title: 'Détails de la Pizza' }} />
+  </Stack.Navigator>
+);
+
+const RootLayout = () => {
   return (
     <Provider store={store}>
-
-      <Stack.Navigator initialRouteName="ProductList">
-        <Stack.Screen name="ProductList" component={ProductList} options={{ title: 'Pizzas' }} />
-        <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ title: 'Détails de la Pizza' }} />
-      </Stack.Navigator>
+        <Tab.Navigator>
+          <Tab.Screen
+            name="ProductList"
+            component={ProductStack}
+            options={{ title: 'Pizzas', headerShown: false }}
+          />
+          <Tab.Screen
+            name="cart"
+            component={Cart}
+            options={{ title: 'Panier' }}
+          />
+        </Tab.Navigator>
     </Provider>
   );
-}
+};
 
+export default RootLayout;
