@@ -23,6 +23,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
       <Image
         source={{ uri: pizza.image_url }} // Remplace par l'URL de l'image réelle
         style={styles.image}
+        accessibilityLabel="Pizza Image"
       />
       <Text style={styles.pizzaName}>{pizza.name}</Text>
       <Text style={styles.description}>Description: {pizza.description} {pizza.name.toLowerCase()}.</Text>
@@ -30,6 +31,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
 
       <Button
         title="Ajouter au panier"
+        testID='Ajouter au panier'
         onPress={() => dispatch(addPizza(pizza))}
       />
     </View>

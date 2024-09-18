@@ -17,7 +17,7 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     const fetchPizzas = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/pizzas');
+        const response = await axios.get('http://10.0.2.2:3000/pizzas');
         setPizzas(response.data);
       } catch (err) {
         console.error(err);
@@ -36,6 +36,7 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
 
           return (
             <TouchableOpacity
+            testID={item.name}
               onPress={() => navigation.navigate('ProductDetail', { pizza: item })}
             >
               <View style={styles.pizzaContainer}>

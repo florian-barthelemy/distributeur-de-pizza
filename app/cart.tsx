@@ -40,6 +40,7 @@ const Cart = () => {
                     </View>
                     <Button
                         title="Commander"
+                        testID='commander'
                         onPress={() => {
                             alert('Commande passée');
                         }}
