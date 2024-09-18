@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "expo.pizza"
     },
     "web": {
       "bundler": "metro",
@@ -27,10 +28,25 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "@config-plugins/detox",
+        {
+          "skipProguard": false,
+          "subdomains": [
+            "10.0.2.2",
+            "localhost"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "43bc77b8-9626-44b3-a4ee-62960fdb6da2"
+      }
     }
   }
 }

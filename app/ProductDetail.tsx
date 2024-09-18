@@ -31,6 +31,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
 
       <Button
         title="Ajouter au panier"
+        testID='Ajouter au panier'
         onPress={() => dispatch(addPizza(pizza))}
       />
     </View>

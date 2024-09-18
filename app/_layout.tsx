@@ -41,7 +41,7 @@ const RootLayout:React.FC = () => {
           <Tab.Screen
             name="cart"
             component={Cart}
-            options={{ title: 'Panier' }}
+            options={{ title: 'Panier', tabBarTestID:'cart' }}
           />
         </Tab.Navigator>
     </Provider>
