@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Button, Image, StyleSheet } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from './_layout';
+import { RootStackParamListStore } from './_layout';  // Assurez-vous que cela est correctement typé.
 import { useDispatch } from 'react-redux';
 import { addPizza } from '@/redux/pizzaReducer';
 
-type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
-type ProductDetailNavigationProp = StackNavigationProp<RootStackParamList, 'ProductDetail'>;
+type ProductDetailRouteProp = RouteProp<RootStackParamListStore, 'ProductDetail'>;
+type ProductDetailNavigationProp = StackNavigationProp<RootStackParamListStore, 'ProductDetail'>;
 
 interface Props {
   route: ProductDetailRouteProp;
@@ -15,8 +15,23 @@ interface Props {
 }
 
 const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
-  const { pizza } = route.params;
+  const { pizza } = route.params || {};  // Récupère `pizza` depuis `route.params` avec une valeur par défaut
   const dispatch = useDispatch();
+
+  // Diagnostic pour vérifier les paramètres reçus
+  useEffect(() => {
+    console.log("Route Params: ", route.params);  // Logge les paramètres de route
+    console.log("Pizza: ", pizza);  // Logge l'objet pizza pour s'assurer qu'il est bien défini
+  }, [route.params]);
+
+  // Si l'objet `pizza` ou son id est manquant, afficher une erreur
+  if (!pizza || !pizza.id) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Pizza invalide. Veuillez réessayer.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -26,7 +41,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
         accessibilityLabel="Pizza Image"
       />
       <Text style={styles.pizzaName}>{pizza.name}</Text>
-      <Text style={styles.description}>Description: {pizza.description} {pizza.name.toLowerCase()}.</Text>
+      <Text style={styles.description}>Description: {pizza.description}</Text>
       <Text style={styles.price}>Prix: {pizza.price}€</Text>
 
       <Button
@@ -61,6 +76,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
   },
 });
 

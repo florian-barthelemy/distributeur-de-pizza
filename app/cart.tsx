@@ -1,16 +1,19 @@
 import React from 'react';
-import { View, Text, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPizza, removePizza } from '@/redux/pizzaReducer';
 import { RootState } from '@/redux/pizzaStore';
-
 
 const Cart = () => {
     const dispatch = useDispatch();
     const cartItems = useSelector((state: RootState) => state.pizzas.value);
 
+    // Calculer le prix total du panier
     const totalPrice = cartItems.reduce((total, item) => {
-        return total + item.pizza.price * item.quantity;
+        if (item.pizza && item.pizza.price) {
+            return total + item.pizza.price * item.quantity;
+        }
+        return total;
     }, 0);
 
     return (
@@ -21,19 +24,24 @@ const Cart = () => {
             ) : (
                 <>
                     {cartItems.map((item, index) => (
-                        <View key={index} style={styles.item}>
-                            <Text style={styles.itemText}>{item.pizza.name}</Text>
-                            <Text style={styles.itemPrice}>{item.pizza.price} €</Text>
-                            <View style={styles.quantityContainer}>
-                                <TouchableOpacity onPress={() => dispatch(addPizza(item.pizza))} style={styles.button}>
-                                    <Text style={styles.buttonText}>+</Text>
-                                </TouchableOpacity>
-                                <Text>{item.quantity}</Text>
-                                <TouchableOpacity onPress={() => dispatch(removePizza(item.pizza))} style={styles.button}>
-                                    <Text style={styles.buttonText}>-</Text>
-                                </TouchableOpacity>
+                        // Vérifie si item.pizza est défini avant d'afficher les informations
+                        item.pizza ? (
+                            <View key={index} style={styles.item}>
+                                <Text style={styles.itemText}>{item.pizza.name}</Text>
+                                <Text style={styles.itemPrice}>{item.pizza.price} €</Text>
+                                <View style={styles.quantityContainer}>
+                                    <TouchableOpacity onPress={() => dispatch(addPizza(item.pizza))} style={styles.button}>
+                                        <Text style={styles.buttonText}>+</Text>
+                                    </TouchableOpacity>
+                                    <Text>{item.quantity}</Text>
+                                    <TouchableOpacity onPress={() => dispatch(removePizza(item.pizza))} style={styles.button}>
+                                        <Text style={styles.buttonText}>-</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        </View>
+                        ) : (
+                            <Text key={index} style={styles.errorText}>Panier vide</Text> // En cas de pizza invalide ou manquante
+                        )
                     ))}
                     <View style={styles.totalContainer}>
                         <Text style={styles.totalText}>Total : {totalPrice.toFixed(2)} €</Text>
@@ -86,11 +94,9 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
-
     quantityContainer: {
-        display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     totalContainer: {
         marginTop: 20,
@@ -102,6 +108,11 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+    errorText: {
+        color: 'red',
+        textAlign: 'center',
+        marginVertical: 10,
     },
 });
 
