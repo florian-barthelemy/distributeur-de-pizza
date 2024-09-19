@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, Button, Image, StyleSheet } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamListStore } from './_layout';  // Assurez-vous que cela est correctement typé.
+import { RootStackParamListStore } from './_layout'; 
 import { useDispatch } from 'react-redux';
 import { addPizza } from '@/redux/pizzaReducer';
 
@@ -14,18 +14,13 @@ interface Props {
   navigation: ProductDetailNavigationProp;
 }
 
-const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
-  const { pizza } = route.params || {};  // Récupère `pizza` depuis `route.params` avec une valeur par défaut
+const ProductDetail: React.FC<Props> = ({ route }) => {
+  const { pizza } = route.params;
+
   const dispatch = useDispatch();
 
-  // Diagnostic pour vérifier les paramètres reçus
-  useEffect(() => {
-    console.log("Route Params: ", route.params);  // Logge les paramètres de route
-    console.log("Pizza: ", pizza);  // Logge l'objet pizza pour s'assurer qu'il est bien défini
-  }, [route.params]);
-
-  // Si l'objet `pizza` ou son id est manquant, afficher une erreur
-  if (!pizza || !pizza.id) {
+  // Vérifier que la pizza est bien définie et contient un `id` et un `price`
+  if (!pizza || !pizza.id || !pizza.price) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Pizza invalide. Veuillez réessayer.</Text>
@@ -36,7 +31,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: pizza.image_url }} // Remplace par l'URL de l'image réelle
+        source={{ uri: pizza.image_url }} 
         style={styles.image}
         accessibilityLabel="Pizza Image"
       />
@@ -46,7 +41,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
 
       <Button
         title="Ajouter au panier"
-        testID='Ajouter au panier'
+        testID="ajouter-au-panier"
         onPress={() => dispatch(addPizza(pizza))}
       />
     </View>

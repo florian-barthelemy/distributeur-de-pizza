@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import axios from 'axios';
-import { Pizza } from '@/model/pizza';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadPizzas } from '@/redux/pizzaReducer';
+import { RootState, AppDispatch } from '../redux/pizzaStore';
 import { RootStackParamList } from './_layout';
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductList'>;
@@ -12,20 +13,15 @@ interface Props {
 }
 
 const ProductList: React.FC<Props> = ({ navigation }) => {
-  const [pizzas, setPizzas] = useState<Pizza[]>([]);
+  const dispatch: AppDispatch = useDispatch();
+  
+  // Récupérer les pizzas depuis Redux
+  const pizzas = useSelector((state: RootState) => state.pizzas.list);
 
+  // Charger les pizzas depuis l'API
   useEffect(() => {
-    const fetchPizzas = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/pizzas');
-        setPizzas(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchPizzas();
-  }, []);
+    dispatch(loadPizzas());
+  }, [dispatch]);
 
   return (
     <View style={styles.container}>
@@ -33,12 +29,14 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
         data={pizzas}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => {
+          // Assurer que pizza est bien défini et contient un prix
+          if (!item || !item.price) {
+            console.error('Pizza invalide:', item);
+            return null;
+          }
 
           return (
-            <TouchableOpacity
-            testID={item.name}
-              onPress={() => navigation.navigate('ProductDetail', { pizza: item })}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate('ProductDetail', { pizza: item })}>
               <View style={styles.pizzaContainer}>
                 <Image source={{ uri: item.image_url }} style={styles.image} />
                 <View style={styles.priceContainer}>
