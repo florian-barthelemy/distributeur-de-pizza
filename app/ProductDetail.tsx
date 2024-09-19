@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, Button, Image, StyleSheet } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -14,9 +14,8 @@ interface Props {
   navigation: ProductDetailNavigationProp;
 }
 
-const ProductDetail: React.FC<Props> = ({ route }) => {
+const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
   const { pizza } = route.params;
-
   const dispatch = useDispatch();
 
   // Vérifier que la pizza est bien définie et contient un `id` et un `price`
@@ -27,6 +26,12 @@ const ProductDetail: React.FC<Props> = ({ route }) => {
       </View>
     );
   }
+
+  // Fonction pour ajouter au panier et rediriger vers la page du panier
+  const handleAddToCart = () => {
+    dispatch(addPizza(pizza)); // Ajouter la pizza au panier
+    navigation.navigate('Cart'); // Rediriger vers la page du panier
+  };
 
   return (
     <View style={styles.container}>
@@ -42,7 +47,7 @@ const ProductDetail: React.FC<Props> = ({ route }) => {
       <Button
         title="Ajouter au panier"
         testID="ajouter-au-panier"
-        onPress={() => dispatch(addPizza(pizza))}
+        onPress={handleAddToCart}
       />
     </View>
   );
