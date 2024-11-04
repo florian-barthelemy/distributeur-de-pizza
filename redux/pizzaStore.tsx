@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import pizzaReducer from '@/redux/pizzaReducer';
+import authReducer from '@/redux/authSlice';
 
 // Création du store avec tous les reducers
 export const store = configureStore({
   reducer: {
-    pizzas: pizzaReducer, // Ici tu peux ajouter d'autres reducers si nécessaire
+    pizzas: pizzaReducer,
+    auth: authReducer, 
   },
 });
 
