@@ -1,23 +1,37 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Pizza } from '../model/pizza'; // Définition du type Pizza
 import ProductDetail from './ProductDetail';
 import ProductList from './ProductList';
-import { store } from '@/redux/pizzaStore';
-import { Provider } from 'react-redux';
-import Cart from './Cart';
+import PizzaForm from './PizzaForm'
+import { RootState, store } from '@/redux/pizzaStore';
+import { Provider, useSelector } from 'react-redux';
+import Cart from './cart';
 import { loadCartFromStorage } from '@/redux/pizzaReducer';
+import LoginScreen from './Login';
+import SignupScreen from './Signup';
+import { logout } from '@/redux/authSlice';
+import { Button } from 'react-native';
+import { User } from '@/model/user';
+import ProductListAdmin from './ProductListAdmin';
+import Profile from './Profile';
 
 export type RootStackParamList = {
   ProductList: undefined;
   ProductDetail: { pizza: Pizza };
+  PizzaForm: {pizza: Pizza | null};
+  Login: undefined;
+  Signup: undefined;
 };
 
 export type RootStackParamListStore = {
   ProductList: undefined;
   ProductDetail: { pizza: Pizza };
+  PizzaForm: {pizza: Pizza | null};
   Cart: undefined;
+  Login: undefined;
+  Signup: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -35,17 +49,40 @@ const ProductStack = () => (
       component={ProductDetail}
       options={{ title: 'Détails de la Pizza' }}
     />
+    <Stack.Screen
+      name="PizzaForm"
+      component={PizzaForm}
+      options={{ title: 'Sauvegarde de la Pizza' }}
+    />
   </Stack.Navigator>
 );
 
 const RootLayout: React.FC = () => {
-  useEffect(() => {
-    // Charger le panier depuis AsyncStorage
-    store.dispatch(loadCartFromStorage());
-  }, []);
+    const [isLogged, setIsLogged] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
+    const handleLogout = () => {
+      store.dispatch(logout());
+    };
+    useEffect(() => {
+      const state = store.getState();
+      setIsLogged(state.auth.isAuthenticated);
+      setUser(state.auth.user);
+  
+      // Optionnel : Vous pouvez également vous abonner aux changements de l'état
+      const unsubscribe = store.subscribe(() => {
+        const newState = store.getState();
+        setIsLogged(newState.auth.isAuthenticated);
+        setUser(newState.auth.user);
+      });
 
+      // Nettoyage de l'abonnement
+      return () => {
+        unsubscribe();
+      };
+    }, []);
   return (
     <Provider store={store}>
+
       <Tab.Navigator>
         {/* Onglet de la liste de produits avec la pile */}
         <Tab.Screen
@@ -53,14 +90,44 @@ const RootLayout: React.FC = () => {
           component={ProductStack} // Utilise `ProductStack` comme composant pour l'onglet "Pizzas"
           options={{ title: 'Pizzas', headerShown: false }}
         />
+        {!isLogged  && (
+          <>
+            <Tab.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ title: 'Connexion' }}
+            />
+            <Tab.Screen
+              name="Signup"
+              component={SignupScreen}
+              options={{ title: 'Inscription' }}
+            />
+          </>
+        )}
+        {isLogged  && (
+          <Tab.Screen
+          name='Profile'
+          component={Profile}
+          options={{ title: 'Profil'}}
+          />
+        )}
+        {(user && user.role.toLowerCase()=='admin') &&(
+          <Tab.Screen
+          name='Admin'
+          component={ProductListAdmin}
+          options={{title: 'Admin'}}/>
+        )}
         {/* Onglet du panier */}
         <Tab.Screen
-          name="Cart"
+          name="cart"
           component={Cart}
           options={{ title: 'Panier', tabBarTestID: 'cart' }}
         />
       </Tab.Navigator>
-    </Provider>
+      {isLogged && (
+          <Button title="Déconnexion" onPress={handleLogout} />
+        )}
+          </Provider>
   );
 };
 

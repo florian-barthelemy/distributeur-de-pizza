@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Button } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadPizzas } from '@/redux/pizzaReducer';
+import { deletePizza, loadPizzas } from '@/redux/pizzaReducer';
 import { RootState, AppDispatch } from '../redux/pizzaStore';
 import { RootStackParamList } from './_layout';
-import Animated, { SlideInLeft } from 'react-native-reanimated';
-import { Pizza } from '@/model/pizza';
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductList'>;
 
@@ -25,30 +23,44 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
     dispatch(loadPizzas());
   }, [dispatch]);
 
-  const PizzaItem: React.FC<{ item: Pizza }> = ({ item }) => (
-    <Animated.View entering={SlideInLeft.delay(300).duration(500)}>
-      <TouchableOpacity onPress={() => navigation.navigate('ProductDetail', { pizza: item })}>
+  return (
+    <View style={styles.container}>
+        <Button title="Ajouter" onPress={() => navigation.navigate('PizzaForm',{pizza:null})} />
+      <FlatList
+        data={pizzas}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => {
+          // Assurer que pizza est bien défini et contient un prix
+          if (!item || !item.price) {
+            console.error('Pizza invalide:', item);
+            return null;
+          }
+
+          return (
               <View style={styles.pizzaContainer}>
                 <Image source={{ uri: item.image_url }} style={styles.image} />
                 <View style={styles.priceContainer}>
                   <Text style={styles.pizzaName}>{item.name}</Text>
                   <Text style={styles.pizzaPrice}>{item.price}€</Text>
+                  <View style={styles.actions}>
+                  <Button title="Modifier" onPress={() => navigation.navigate('PizzaForm', {pizza : item})} />
+                  <Button title="Consulter" onPress={() => navigation.navigate('ProductDetail', { pizza: item })}/> 
+                  <Button title="Supprimer" onPress={() => dispatch(deletePizza(item.id))} />
+                </View>
                 </View>
               </View>
-            </TouchableOpacity>
-    </Animated.View>
+          );
+        }}
+      />
+    </View>
   );
-  
-  return (
-    <FlatList
-      data={pizzas}
-      renderItem={({ item }) => <PizzaItem item={item} />}
-      keyExtractor={(item) => item.name}
-    />
-  );
-}
+};
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
   pizzaContainer: {
     padding: 10,
     borderBottomWidth: 1,
@@ -59,22 +71,24 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
   pizzaName: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   pizzaPrice: {
-    fontSize: 16,
-    color: '#888',
+    color: '#666',
   },
-
+  image: {
+    width: 100,
+    height: 100,
+  },
   priceContainer: {
     display: 'flex',
     alignItems: 'center',
   },
-
-  image: {
-    width: 100,
-    height: 100,
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap:10
   },
 });
 
