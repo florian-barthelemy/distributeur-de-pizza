@@ -15,6 +15,7 @@ import { logout } from '@/redux/authSlice';
 import { Button } from 'react-native';
 import { User } from '@/model/user';
 import ProductListAdmin from './ProductListAdmin';
+import Profile from './Profile';
 
 export type RootStackParamList = {
   ProductList: undefined;
@@ -102,6 +103,13 @@ const RootLayout: React.FC = () => {
               options={{ title: 'Inscription' }}
             />
           </>
+        )}
+        {isLogged  && (
+          <Tab.Screen
+          name='Profile'
+          component={Profile}
+          options={{ title: 'Profil'}}
+          />
         )}
         {(user && user.role.toLowerCase()=='admin') &&(
           <Tab.Screen

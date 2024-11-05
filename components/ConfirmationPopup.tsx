@@ -1,11 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/pizzaStore';
+import { updateLoyaltyPoints } from '@/redux/loyaltyActions';
+import { prepareUIRegistry } from 'react-native-reanimated/lib/typescript/reanimated2/frameCallback/FrameCallbackRegistryUI';
 
 const ConfirmationPopup: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const cartItems = useSelector((state: RootState) => state.pizzas.cart);
+  const userId = useSelector((state: RootState) => state.auth.user?.id || 0);
+  const userPoints = useSelector((state: RootState) => state.loyaltyPoints.points || 0);
 
   const handleOrderConfirm = () => {
+    let pointsEarned = userPoints;
+    cartItems.forEach(element => {
+      pointsEarned += Math.floor(element.pizza.price * element.quantity);
+    });
+    dispatch(updateLoyaltyPoints(userId, pointsEarned));
     setShowConfirmation(true);
     setTimeout(() => setShowConfirmation(false), 2000); // Affiche l'animation pour 2 secondes
   };
