@@ -1,21 +1,17 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadPizzas } from '@/redux/pizzaReducer';
 import { RootState, AppDispatch } from '../redux/pizzaStore';
 import { RootStackParamList } from './_layout';
 import Animated, { SlideInLeft } from 'react-native-reanimated';
+import { Pizza } from '@/model/pizza';
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductList'>;
 
 interface Props {
   navigation: ProductListNavigationProp;
-}
-
-interface PizzaItemProps {
-  name: string;
-  price: number;
 }
 
 const ProductList: React.FC<Props> = ({ navigation }) => {
@@ -29,34 +25,38 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
     dispatch(loadPizzas());
   }, [dispatch]);
 
-  const PizzaItem: React.FC<PizzaItemProps> = ({ name, price }) => (
+  const PizzaItem: React.FC<{ item: Pizza }> = ({ item }) => (
     <Animated.View entering={SlideInLeft.delay(300).duration(500)}>
-      <View style={styles.pizzaItem}>
-        <Text style={styles.pizzaName}>{name}</Text>
-        <Text style={styles.pizzaPrice}>{price} €</Text>
-      </View>
+      <TouchableOpacity onPress={() => navigation.navigate('ProductDetail', { pizza: item })}>
+              <View style={styles.pizzaContainer}>
+                <Image source={{ uri: item.image_url }} style={styles.image} />
+                <View style={styles.priceContainer}>
+                  <Text style={styles.pizzaName}>{item.name}</Text>
+                  <Text style={styles.pizzaPrice}>{item.price}€</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
     </Animated.View>
   );
-
+  
   return (
     <FlatList
       data={pizzas}
-      renderItem={({ item }) => <PizzaItem name={item.name} price={item.price} />}
+      renderItem={({ item }) => <PizzaItem item={item} />}
       keyExtractor={(item) => item.name}
     />
   );
-};
+}
 
 const styles = StyleSheet.create({
-  pizzaItem: {
-    padding: 15,
-    marginVertical: 8,
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
+  pizzaContainer: {
+    padding: 10,
+    borderBottomWidth: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderColor: '#ccc',
   },
   pizzaName: {
     fontSize: 18,
@@ -65,6 +65,16 @@ const styles = StyleSheet.create({
   pizzaPrice: {
     fontSize: 16,
     color: '#888',
+  },
+
+  priceContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+
+  image: {
+    width: 100,
+    height: 100,
   },
 });
 
