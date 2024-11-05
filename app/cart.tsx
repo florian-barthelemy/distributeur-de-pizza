@@ -3,6 +3,7 @@ import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPizza, removePizza } from '@/redux/pizzaReducer';
 import { RootState } from '../redux/pizzaStore';
+import ConfirmationPopup from '@/components/ConfirmationPopup';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ const Cart = () => {
         />
       )}
       <Text style={styles.totalText}>Total: {totalPrice.toFixed(2)}€</Text>
-      <Button title="Commander" onPress={() => alert('Commande passée')} />
+     <ConfirmationPopup></ConfirmationPopup>
     </View>
   );
 };
@@ -68,6 +69,7 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap:10
   },
   totalText: {
     fontSize: 20,

@@ -1,15 +1,21 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadPizzas } from '@/redux/pizzaReducer';
 import { RootState, AppDispatch } from '../redux/pizzaStore';
 import { RootStackParamList } from './_layout';
+import Animated, { SlideInLeft } from 'react-native-reanimated';
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductList'>;
 
 interface Props {
   navigation: ProductListNavigationProp;
+}
+
+interface PizzaItemProps {
+  name: string;
+  price: number;
 }
 
 const ProductList: React.FC<Props> = ({ navigation }) => {
@@ -23,63 +29,42 @@ const ProductList: React.FC<Props> = ({ navigation }) => {
     dispatch(loadPizzas());
   }, [dispatch]);
 
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={pizzas}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => {
-          // Assurer que pizza est bien défini et contient un prix
-          if (!item || !item.price) {
-            console.error('Pizza invalide:', item);
-            return null;
-          }
+  const PizzaItem: React.FC<PizzaItemProps> = ({ name, price }) => (
+    <Animated.View entering={SlideInLeft.delay(300).duration(500)}>
+      <View style={styles.pizzaItem}>
+        <Text style={styles.pizzaName}>{name}</Text>
+        <Text style={styles.pizzaPrice}>{price} €</Text>
+      </View>
+    </Animated.View>
+  );
 
-          return (
-            <TouchableOpacity onPress={() => navigation.navigate('ProductDetail', { pizza: item })}>
-              <View style={styles.pizzaContainer}>
-                <Image source={{ uri: item.image_url }} style={styles.image} />
-                <View style={styles.priceContainer}>
-                  <Text style={styles.pizzaName}>{item.name}</Text>
-                  <Text style={styles.pizzaPrice}>{item.price}€</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-      />
-    </View>
+  return (
+    <FlatList
+      data={pizzas}
+      renderItem={({ item }) => <PizzaItem name={item.name} price={item.price} />}
+      keyExtractor={(item) => item.name}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  pizzaContainer: {
-    padding: 10,
-    borderBottomWidth: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderColor: '#ccc',
+  pizzaItem: {
+    padding: 15,
+    marginVertical: 8,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
   pizzaName: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   pizzaPrice: {
-    color: '#666',
-  },
-  image: {
-    width: 100,
-    height: 100,
-  },
-  priceContainer: {
-    display: 'flex',
-    alignItems: 'center',
+    fontSize: 16,
+    color: '#888',
   },
 });
 

@@ -5,6 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamListStore } from './_layout'; 
 import { useDispatch } from 'react-redux';
 import { addPizza } from '@/redux/pizzaReducer';
+import AddToCartButton from '@/components/AddToCartButton';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamListStore, 'ProductDetail'>;
 type ProductDetailNavigationProp = StackNavigationProp<RootStackParamListStore, 'ProductDetail'>;
@@ -30,7 +31,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
   // Fonction pour ajouter au panier et rediriger vers la page du panier
   const handleAddToCart = () => {
     dispatch(addPizza(pizza)); // Ajouter la pizza au panier
-    navigation.navigate('Cart'); // Rediriger vers la page du panier
+    navigation.navigate('cart'); // Rediriger vers la page du panier
   };
 
   return (
@@ -44,10 +45,7 @@ const ProductDetail: React.FC<Props> = ({ route, navigation }) => {
       <Text style={styles.description}>Description: {pizza.description}</Text>
       <Text style={styles.price}>Prix: {pizza.price}€</Text>
 
-      <Button
-        title="Ajouter au panier"
-        testID="ajouter-au-panier"
-        onPress={handleAddToCart}
+      <AddToCartButton onPress={handleAddToCart}
       />
     </View>
   );
